@@ -140,3 +140,29 @@ void contextSwitch(void) {
                  "pop r0\n\t"
                  "reti\n\t");
 }
+int main(void) {
+    // Initialize ports and timers
+    initializePorts();
+    initializeTimers();
+    
+    // Set the task functions in TCB
+    tcb[0].taskFn = task1;
+    tcb[1].taskFn = task2;
+    tcb[2].taskFn = task3;
+    
+    // Enable global interrupts
+    sei();
+    
+    while (1) {
+        // Context switch between tasks
+        contextSwitch();
+    }
+
+    return 0;
+}
+
+// Timer0 compare match ISR
+ISR(TIMER0_COMPA_vect) {
+    // Call the task function
+    tcb[currentTask].taskFn();
+}
